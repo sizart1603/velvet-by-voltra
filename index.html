@@ -774,7 +774,7 @@
       <p class="subline">Activewear designed for the woman who doesn't need to prove anything. Comfort that moves the way you do. Coming soon.</p>
       <div class="bottom-btn-row">
         <button class="early-wearer-btn bottom-influencer-btn" onclick="openPage3()">Be A Velvet Influencer</button>
-        <button class="who-btn" onclick="openPage2()">Who is she? &nbsp;→</button>
+        <button class="who-btn" onclick="function openPage2()">Who is she? &nbsp;→</button>
       </div>
     </div>
 
@@ -833,11 +833,14 @@
   function openPage2() {
     document.getElementById('page2').classList.add('visible');
     document.getElementById('backBtn').classList.add('visible');
+        document.getElementById('backBtn').style.pointerEvents = 'auto';
     document.body.style.overflow = 'hidden';
   }
   function closePage2() {
     document.getElementById('page2').classList.remove('visible');
     document.getElementById('backBtn').classList.remove('visible');
+        document.getElementById('backBtn').style.pointerEvents = 'none';
+        window.scrollTo(0, 0);
     document.body.style.overflow = '';
   }
 
