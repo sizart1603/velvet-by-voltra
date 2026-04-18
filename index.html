@@ -350,10 +350,11 @@
       align-items: center;
       gap: 8px;
       opacity: 0;
-      transition: opacity 0.4s ease 0.5s, color 0.3s ease;
-      z-index: 101;
+      pointer-events: none;
+      transition: opacity 0.4s ease 0.3s, color 0.3s ease;
+      z-index: 200;
     }
-    .back-btn.visible { opacity: 1; }
+    .back-btn.visible { opacity: 1; pointer-events: all; }
     .back-btn:hover { color: var(--cream); }
     .back-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; }
 
@@ -782,7 +783,10 @@
 </div>
 
 <script>
-  function handleSubmit() {
+  const SUPA_URL = 'https://nueejmjudxozrtfoffhl.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51ZWVqbWp1ZHhvenJ0Zm9mZmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzQzNzEsImV4cCI6MjA5MDMxMDM3MX0.nauZC-2oYeS1GGyxb1f97zQ4CxbajhFTUVm1uVXD3VY';
+
+  async function handleSubmit() {
     const email = document.getElementById('emailInput').value.trim();
     const btn = document.getElementById('submitBtn');
     const micro = document.getElementById('microCopy');
@@ -796,6 +800,18 @@
     btn.style.opacity = '0'; btn.style.pointerEvents = 'none';
     inputRow.style.opacity = '0.3'; inputRow.style.pointerEvents = 'none';
     micro.style.display = 'none';
+    try {
+      await fetch(SUPA_URL + '/rest/v1/velvet_early_birds', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': 'Bearer ' + SUPA_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email })
+      });
+    } catch(e) { console.log(e); }
     setTimeout(() => { success.classList.add('show'); }, 300);
   }
 
@@ -803,45 +819,62 @@
   function openPage3() {
     document.getElementById('page3').classList.add('visible');
     document.getElementById('backBtn3').classList.add('visible');
+    document.getElementById('backBtn3').style.pointerEvents = 'auto';
     document.body.style.overflow = 'hidden';
   }
   function closePage3() {
     document.getElementById('page3').classList.remove('visible');
     document.getElementById('backBtn3').classList.remove('visible');
+    document.getElementById('backBtn3').style.pointerEvents = 'none';
     document.body.style.overflow = '';
+    window.scrollTo(0, 0);
   }
-  function submitVelvetForm() {
-    const name = document.getElementById('f-name').value.trim();
+  async function submitVelvetForm() {
+    const full_name = document.getElementById('f-name').value.trim();
     const email = document.getElementById('f-email').value.trim();
     const platform = document.getElementById('f-platform').value;
-    const followers = document.getElementById('f-followers').value;
+    const follower_range = document.getElementById('f-followers').value;
     const role = document.getElementById('f-role').value;
-    const size = document.getElementById('f-size').value;
-    const address = document.getElementById('f-address').value.trim();
-    const morning = document.getElementById('f-morning').value.trim();
-    if (!name || !email || !platform || !followers || !role || !size || !address) {
+    const clothing_size = document.getElementById('f-size').value;
+    const city = document.getElementById('f-city').value.trim();
+    const mailing_address = document.getElementById('f-address').value.trim();
+    const morning_words = document.getElementById('f-morning').value.trim();
+    if (!full_name || !email || !platform || !follower_range || !role || !clothing_size || !mailing_address) {
       return;
     }
     document.getElementById('velvetForm').style.opacity = '0.3';
     document.getElementById('velvetForm').style.pointerEvents = 'none';
+    try {
+      await fetch(SUPA_URL + '/rest/v1/velvet_influencers', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Authorization': 'Bearer ' + SUPA_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ full_name, email, platform, follower_range, role, clothing_size, city, mailing_address, morning_words })
+      });
+    } catch(e) { console.log(e); }
     setTimeout(() => {
       document.getElementById('formSuccess').classList.add('show');
       document.getElementById('velvetForm').style.opacity = '1';
+      document.getElementById('velvetForm').style.pointerEvents = 'none';
     }, 400);
   }
 
   function openPage2() {
     document.getElementById('page2').classList.add('visible');
     document.getElementById('backBtn').classList.add('visible');
-        document.getElementById('backBtn').style.pointerEvents = 'auto';
+    document.getElementById('backBtn').style.pointerEvents = 'auto';
     document.body.style.overflow = 'hidden';
   }
   function closePage2() {
     document.getElementById('page2').classList.remove('visible');
     document.getElementById('backBtn').classList.remove('visible');
-        document.getElementById('backBtn').style.pointerEvents = 'none';
-        window.scrollTo(0, 0);
+    document.getElementById('backBtn').style.pointerEvents = 'none';
     document.body.style.overflow = '';
+    window.scrollTo(0, 0);
   }
 
   document.getElementById('emailInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSubmit(); });
@@ -849,7 +882,6 @@
 
 <!-- PAGE 2: WHO IS SHE -->
 <div class="page2" id="page2">
-  <!-- BACK BUTTON -->
   <button class="back-btn" id="backBtn" onclick="closePage2()">
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
     back
